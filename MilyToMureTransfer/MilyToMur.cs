@@ -46,15 +46,7 @@
                     
                 }
             }
-            for (line = 0; line < k; line++)
-            {
-                for (column = 0; column < m; column++)
-                {
-                    Console.Write(mily[line, column]);
-                }
-                Console.WriteLine();
-            }
-
+            Console.WriteLine();
             for (currentQCindition = 0; currentQCindition < unicTransition.Count; currentQCindition++)
             {
                 currentSCondition = Convert.ToInt32(unicTransition[currentQCindition].Substring(1, 1));
