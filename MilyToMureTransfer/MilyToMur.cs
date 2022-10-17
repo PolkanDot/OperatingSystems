@@ -48,7 +48,10 @@
             {
                 for (column = 0; column < m; column++)
                 {
-                    mily[line, column] = mily[line, column] + $" {unicTransition.IndexOf(mily[line, column])}";
+                    if (mily[line, column] != "-")
+                    {
+                        mily[line, column] = mily[line, column] + $" {unicTransition.IndexOf(mily[line, column])}";
+                    }
                 }
             }
 
