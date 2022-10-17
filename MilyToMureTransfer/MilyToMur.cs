@@ -2,7 +2,6 @@
 {
     class MainProgram
     {
-
         static void Main(string[] args)
         {
             // Подкотовка к чтению таблицы
@@ -21,29 +20,18 @@
 
             for (line = 0; line < k; line++)
             {
-                mas = Console.ReadLine().Split(", ");                
+                mas = Console.ReadLine().Split(", ");
                 for (column = 0; column < m; column++)
                 {
+                    //  Сохраняем значения в таблицу Мили
+                    mily[line, column] = mas[column];
                     // Если такая пара S/Y еще не встречалась и это не "-", то сохраняем ее в списке уникальных пар
-                    // и присваеваем ей номер состояния q 
-                    if ((!unicTransition.Contains(mas[column])) && (mas[column] != "-"))
+                    if ((!unicTransition.Contains(mily[line, column])) && (mily[line, column] != "-"))
                     {
-                        unicTransition.Add(mas[column]);
-                        mily[line, column] = mas[column] + $" {unicTransition.Count - 1}";
-                    }
-                    // Если повторно получили существующую пару S/Y то присваеваем ей уже выделенное для нее состояние q
-                    else if (mas[column] != "-")
-                    {
-                        recurringTransition = unicTransition.IndexOf(mas[column]);
-                        mily[line, column] = mas[column] + $" {recurringTransition}";
-                    }
-                    // Если это "-" то просто сохраняем его 
-                    else
-                    {
-                        mily[line, column] = mas[column];
-                    }
+                        unicTransition.Add(mily[line, column]);   
+                    }                   
                     // Сохраняем минимальный номер состояния S
-                    if (mas[column] != "-")
+                    if (mily[line, column] != "-")
                     {
                         currentSNumber = Convert.ToInt32(mily[line, column].Substring(mily[line, column].IndexOf('S') + 1, 1));
                         if (minSNumber > currentSNumber)
@@ -51,10 +39,19 @@
                             minSNumber = currentSNumber;
                         }
                     }
-                    
+
                 }
             }
-            Console.WriteLine();
+            unicTransition.Sort();
+            // Добавление в таблицу Мили состояний q
+            for (line = 0; line < k; line++)
+            {
+                for (column = 0; column < m; column++)
+                {
+                    mily[line, column] = mily[line, column] + $" {unicTransition.IndexOf(mily[line, column])}";
+                }
+            }
+
             //Идем по списку уникальных пар S/Y
             for (currentQCindition = 0; currentQCindition < unicTransition.Count; currentQCindition++)
             {
