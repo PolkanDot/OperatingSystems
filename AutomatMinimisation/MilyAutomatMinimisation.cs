@@ -132,7 +132,7 @@
             {
                 for (column = 0; column < m; column++)
                 {
-                    currentSequence += secondWorkTable[line][column + 1] + " " + milyOutputSymbols[line, column] + " ";        
+                    currentSequence += (Convert.ToInt32(secondWorkTable[line][column + 1]) - 1).ToString() + " " + milyOutputSymbols[line, column] + " ";        
                 }
                 if (!(unicSequence.Contains(currentSequence)))
                 {
