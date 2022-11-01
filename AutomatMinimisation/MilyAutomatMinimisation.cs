@@ -164,7 +164,14 @@
             {
                 for (column = 0; column < m; column++)
                 {
-                    currentSequence += firstWorkTable[line][column + 1] + " " + milyOutputSymbols[line, column] + " ";                          
+                    if (firstWorkTable[line][column + 1] == "-")
+                    {
+                        currentSequence += firstWorkTable[line][column + 1] + " ";
+                    }
+                    else
+                    {
+                        currentSequence += firstWorkTable[line][column + 1] + " " + milyOutputSymbols[line, column] + " ";
+                    }                                           
                 }
                 if (!(unicSequence.Contains(currentSequence)))
                 {
