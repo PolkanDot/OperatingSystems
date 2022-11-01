@@ -11,8 +11,8 @@
             string[,] milyStates = new string[k, m + 1];
             string[,] milyOutputSymbols = new string[k, m];
 
-            //Все вспомогательные целочисленные переменные
-            int line, column, currentSCondition, currentQCindition, currentOutputSymbol, recurringTransition, currentSNumber;
+            //Все вспомогательные переменные
+            int line, column, dashCount = 0;
             string currentSequence = "";
 
             // Для хранения уникальных последовательностей состояний или выходных символов
@@ -29,25 +29,27 @@
                 mas = Console.ReadLine().Split(" ");
                 for (column = 0; column < m * 2; column++)
                 {
-                    if (mas[column] == "-")
-                    {
-                        milyStates[line, column / 2] = mas[column];
-                        milyOutputSymbols[line, column / 2] = mas[column];
-                        currentSequence = currentSequence + mas[column] + " ";
-                    }
-                    else
+                    if (mas[column - dashCount] != "-")
                     {
                         // Если это состояние
                         if (column % 2 == 0)
                         {
-                            milyStates[line, column / 2] = mas[column];
+                            milyStates[line, column / 2] = mas[column - dashCount];
                         }
                         // Если это выходной символ
                         else
                         {
-                            milyOutputSymbols[line, column / 2] = mas[column];
-                            currentSequence = currentSequence + mas[column] + " ";
+                            milyOutputSymbols[line, column / 2] = mas[column - dashCount];
+                            currentSequence = currentSequence + mas[column - dashCount] + " ";
                         }
+                    }
+                    else
+                    {
+                        milyStates[line, column / 2] = mas[column - dashCount];
+                        milyOutputSymbols[line, column / 2] = mas[column - dashCount];
+                        currentSequence = currentSequence + mas[column - dashCount] + " ";
+                        dashCount++;
+                        column++;
                     }
                 }
                 if (!(unicSequence.Contains(currentSequence)))
@@ -57,7 +59,9 @@
                 //Присваеваем текущей строке номер группы по последователбности выходных символов
                 // и записываем последней ячейкой строки таблицы
                 milyStates[line, m] = (unicSequence.IndexOf(currentSequence) + 1).ToString();
+                // Обнуляем вспомогательные переменные для работы с новой строкой
                 currentSequence = "";
+                dashCount = 0;
             }
             unicSequence.Clear();
             int helpColumn;
@@ -71,8 +75,15 @@
                 // Производим заполнение таблицы новыми состояниями
                 for (column = 1; column < m + 1; column++)
                 {
-                    helpColumn = Convert.ToInt32(milyStates[line, column - 1]);
-                    firstWorkTable[line].Add(milyStates[helpColumn, m]);
+                    if (milyStates[line, column - 1] != "-")
+                    {
+                        helpColumn = Convert.ToInt32(milyStates[line, column - 1]);
+                        firstWorkTable[line].Add(milyStates[helpColumn, m]);
+                    }
+                    else
+                    {
+                        firstWorkTable[line].Add("-");
+                    }
                     currentSequence = currentSequence + firstWorkTable[line][column - 1] + " ";
                 }
                 // Сохраняем уникальные последовательности переходов
@@ -120,8 +131,15 @@
                     // Производим заполнение таблицы новыми состояниями
                     for (column = 1; column < m + 1; column++)
                     {
-                        helpColumn = Convert.ToInt32(milyStates[line, column - 1]);
-                        secondWorkTable[line].Add(milyStates[helpColumn, m]);
+                        if (milyStates[line, column - 1] != "-")
+                        {
+                            helpColumn = Convert.ToInt32(milyStates[line, column - 1]);
+                            secondWorkTable[line].Add(milyStates[helpColumn, m]);
+                        }
+                        else
+                        {
+                            secondWorkTable[line].Add("-");
+                        }
                         currentSequence = currentSequence + secondWorkTable[line][column - 1] + " ";
                     }
                     // Сохраняем уникальные последовательности переходов
@@ -174,7 +192,7 @@
             {
                 for (column = 0; column < m; column++)
                 {
-                    currentSequence += (Convert.ToInt32(firstWorkTable[line][column + 1]) - 1).ToString() + " " + milyOutputSymbols[line, column] + " ";        
+                    currentSequence += firstWorkTable[line][column + 1] + " " + milyOutputSymbols[line, column] + " ";                          
                 }
                 if (!(unicSequence.Contains(currentSequence)))
                 {
