@@ -10,7 +10,7 @@
             int m = Convert.ToInt32(mas[1]);
             string[,] murStates = new string[k, m + 1];
             string[,] murOutputSymbols = new string[k, m];
-            string[] startOutputSymbolsSequence = new string[k];
+            string[] startOutputSymbolsSequence = new string[k + 1];
 
             //Все вспомогательные целочисленные переменные
             int line, column, currentStateNumber;
@@ -31,13 +31,17 @@
                 mas = Console.ReadLine().Split(" ");
                 for (column = 0; column < m + 1; column++)
                 {
+                    
                     if (column != 0)
                     {
                         murStates[line, column - 1] = mas[column];
-                        currentStateNumber = Convert.ToInt32(murStates[line, column - 1]);
-                        if (minStateNumber > currentStateNumber)
-                        {
-                            minStateNumber = currentStateNumber;
+                        if (mas[column] != "-")
+                        {                    
+                            currentStateNumber = Convert.ToInt32(murStates[line, column - 1]);
+                            if (minStateNumber > currentStateNumber)
+                            {
+                                minStateNumber = currentStateNumber;
+                            }
                         }
                     }
                     else
@@ -46,12 +50,23 @@
                     }
                 }
             }
+            // Добавляем виртуальное состояние
+            startOutputSymbolsSequence[k] = "-";
+
             // Заполняем таблицу выходных символов
             for (line = 0; line < k; line++)
             {
                 for (column = 0; column < m; column++)
                 {
-                    murOutputSymbols[line, column] = startOutputSymbolsSequence[Convert.ToInt32(murStates[line, column]) - minStateNumber];
+                    if (murStates[line, column] != "-")
+                    {
+                        murOutputSymbols[line, column] = startOutputSymbolsSequence[Convert.ToInt32(murStates[line, column]) - minStateNumber];
+                    }
+                    else
+                    {
+                        murOutputSymbols[line, column] = startOutputSymbolsSequence[k];
+                    }
+                    
                 }
             }
             // Выдиляем уникальные последовательности выходных символов
@@ -84,7 +99,7 @@
                     if (murStates[line, column - 1] != "-")
                     {
                         helpColumn = Convert.ToInt32(murStates[line, column - 1]);
-                        firstWorkTable[line].Add(murStates[helpColumn, m]);
+                        firstWorkTable[line].Add(murStates[helpColumn - minStateNumber, m]);
                     }
                     else
                     {
@@ -135,7 +150,7 @@
                         if (murStates[line, column - 1] != "-")
                         {
                             helpColumn = Convert.ToInt32(murStates[line, column - 1]);
-                            firstWorkTable[line].Add(murStates[helpColumn, m]);
+                            firstWorkTable[line].Add(murStates[helpColumn - minStateNumber, m]);
                         }
                         else
                         {
