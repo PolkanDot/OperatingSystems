@@ -69,22 +69,19 @@
                     
                 }
             }
-            // Выдиляем уникальные последовательности выходных символов
+            // Выдиляем первичные группы
             for (line = 0; line < k; line++)
             {
-                for (column = 0; column < m; column++)
+                if (!(unicSequence.Contains(startOutputSymbolsSequence[line])))
                 {
-                    currentSequence += murOutputSymbols[line, column] + " ";
-                }
-                if (!(unicSequence.Contains(currentSequence)))
-                {
-                    unicSequence.Add(currentSequence);
+                    unicSequence.Add(startOutputSymbolsSequence[line]);
                 }
                 //Присваеваем текущей строке номер группы по последователбности выходных символов
                 // и записываем последней ячейкой строки таблицы
-                murStates[line, m] = (unicSequence.IndexOf(currentSequence) + 1).ToString();
+                murStates[line, m] = (unicSequence.IndexOf(startOutputSymbolsSequence[line]) + 1).ToString();
                 currentSequence = "";
             }
+            unicSequence.Clear();
             
             // Проводим первый этап минимизации
             for (line = 0; line < k; line++)
@@ -180,13 +177,18 @@
             Console.WriteLine();
             for (line = 0; line < k; line++)
             {
-                for (column = 0; column < m; column++)
+                for (column = 0; column < m + 1; column++)
                 {
-                    currentSequence += firstWorkTable[line][column + 1] + " ";
+                    currentSequence += firstWorkTable[line][column] + " ";
                 }
                 if (!(unicSequence.Contains(currentSequence)))
                 {
                     unicSequence.Add(currentSequence);
+                    currentSequence = "";
+                    for (column = 0; column < m; column++)
+                    {
+                        currentSequence += firstWorkTable[line][column + 1] + " ";
+                    }
                     Console.WriteLine(startOutputSymbolsSequence[line] + " " + (currentSequence.TrimEnd()));
                 }
                 currentSequence = "";
