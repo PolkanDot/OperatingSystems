@@ -2,6 +2,22 @@
 {
     class MainProgram
     {
+        public static void SearchEclose(ref string[,] states, ref List<string> eclose, int currentState, int indexE)
+        {
+            string[] currentTransitions = states[currentState, indexE].Split(',');
+            if (currentTransitions[0] != "-")
+            {
+                for (int column = 0; column < currentTransitions.Length; column++)
+                {
+                    if (!eclose.Contains(currentTransitions[column]))
+                    {
+                        eclose.Add(currentTransitions[column]);
+                        int newCurrentState = Convert.ToInt32(currentTransitions[column]);
+                        SearchEclose(ref states, ref eclose, newCurrentState, indexE);
+                    }
+                }
+            }
+        }
         static void Main(string[] args)
         {
             // Подкотовка к чтению таблицы
@@ -24,6 +40,25 @@
                 {
                     initialStates[line, column] = mas[column];
                 }         
+            }
+
+            
+
+            for (column = 0; column < k; column++)
+            {
+                List<string> workList = new List<string>();
+                workList.Add(column.ToString());
+                SearchEclose(ref initialStates, ref workList, column, m);
+                ecloses.Add(workList);
+            }
+            Console.WriteLine();
+            for (line = 0; line < ecloses.Count; line++)
+            {
+                for (column = 0; column < ecloses[line].Count; column++)
+                {
+                    Console.Write(ecloses[line][column] + " ");
+                }
+                Console.WriteLine();
             }
         }
     }
