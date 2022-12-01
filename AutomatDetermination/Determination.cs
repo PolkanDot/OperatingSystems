@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleApplication
 {
@@ -29,7 +30,13 @@ namespace ConsoleApplication
             string[,] initialStates = new string[k, m + 1];
 
             //Все вспомогательные переменные
-            int line, column = 0;
+            int line, column, currentState, count = 0;
+            string newTransition = "";
+            List<string> newState= new List<string>();
+            List<List<string>> resultAutomatLine = new List<List<string>>();
+
+            //Словарь, содержащий обозначения вновьобразовавшихся состояний
+            var newStates = new Dictionary<string, string>();
 
             // Вспомогательный список для хранения eclose каждого начального состояния
             List<List<string>> ecloses = new List<List<string>>();
@@ -38,7 +45,7 @@ namespace ConsoleApplication
             List<List<string>> remainingStates = new List<List<string>>();
 
             // Таблица результата детерминирования
-            List<List<string>> resultAutomat = new List<List<string>>();
+            List<List<List<string>>> resultAutomat = new List<List<List<string>>>();
 
             // Заполнение первичной таблицы входными данными
             for (line = 0; line < k; line++)
@@ -61,23 +68,10 @@ namespace ConsoleApplication
             List<string> startList = new List<string>();
             startList.Add("0");
             remainingStates.Add(startList);
-            startList = new List<string>();
-            startList.Add("1");
-            startList.Add("2");
-            remainingStates.Add(startList);
-            startList = new List<string>();
-            startList.Add("1");
-            startList.Add("2");
-            startList.Add("3");
-            remainingStates.Add(startList);
-            startList = new List<string>();
-            startList.Add("4");
-            remainingStates.Add(startList);
             List<string> currentEcloseList = new List<string>();
             string currentEcloseString;
             string[] allSymbols;
             HashSet<string> uniqueSymbolsSet = new HashSet<string>();
-            Console.WriteLine();
 
             while (remainingStates.Count > 0)
             {
@@ -92,11 +86,28 @@ namespace ConsoleApplication
                 currentEcloseList = uniqueSymbolsSet.ToList();
                 currentEcloseList.RemoveAt(0);
                 remainingStates.RemoveAt(0);
-                for (column = 0; column < currentEcloseList.Count; column++)
+                for (currentState = 0; currentState < m; currentState++)
                 {
-                    Console.Write(currentEcloseList[column] + " ");
+                    newState = new List<string>();
+                    for (column = 0; column < currentEcloseList.Count; column++)
+                    {
+                        newTransition = currentEcloseList[column];
+                        mas = initialStates[Convert.ToInt32(newTransition), currentState].Split(",");
+                        for (line = 0; line < mas.Length; line++)
+                        {
+                            if (!newState.Contains(mas[line]) && (mas[line] != "-"))
+                            {
+                                newState.Add(mas[line]);
+                            }
+                        }
+                    }
+                    resultAutomatLine.Add(newState);
+                    if (!remainingStates.Contains(newState))
+                    {
+                        remainingStates.Add(newState);
+                    }
                 }
-                Console.WriteLine();
+                resultAutomat.Add(resultAutomatLine);
             }
         }
     }
