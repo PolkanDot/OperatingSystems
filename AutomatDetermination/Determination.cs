@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace ConsoleApplication
@@ -36,7 +37,7 @@ namespace ConsoleApplication
             List<List<string>> resultAutomatLine = new List<List<string>>();
 
             //Словарь, содержащий обозначения вновьобразовавшихся состояний
-            var newStates = new Dictionary<string, List<string>>();
+            var newStates = new Dictionary<string, string>();
 
             // Вспомогательный список для хранения eclose каждого начального состояния
             List<List<string>> ecloses = new List<List<string>>();
@@ -71,10 +72,12 @@ namespace ConsoleApplication
             remainingStates.Add(startList);
             List<string> currentEcloseList = new List<string>();
             string currentEcloseString;
+            string workString;
             string[] allSymbols;
             HashSet<string> uniqueSymbolsSet = new HashSet<string>();
             int stringCounter = 0, stateCounter = 0;
-            newStates.Add(stateCounter.ToString(), remainingStates[0]);
+            workString = string.Join(",", remainingStates[0]);
+            newStates.Add(workString, stateCounter.ToString());
             stateCounter++;
 
             // Пока в ячейках переходов результирующей таблицы есть состояния, для которых мы не нашли их переходы мы продолжаем формировать таблицу
@@ -125,17 +128,39 @@ namespace ConsoleApplication
                         {
                             remainingStates.Add(newState);
                             // Добавляем в словарь новое состояние всесте с его новым обозначением для последующего вывода
-                            newStates.Add(stateCounter.ToString(), newState);
+                            workString = string.Join(",", newState);
+                            newStates.Add(workString, stateCounter.ToString());
                             stateCounter++;
                         }
                     }                                  
                 }
                 // Добавляем в итоговою таблицу все переходы для обработанного состояния
                 resultAutomat.Add(resultAutomatLine);
-                resultAutomatLine.Clear();
+                resultAutomatLine= new List<List<string>>();
                 stringCounter++;
-            }
-            System.Threading.Thread.Sleep(5000);
+                if (remainingStates.Count <= stringCounter)
+                {
+                    bool what;
+                    Console.WriteLine();
+                    for (line = 0; line < resultAutomat.Count; line++)
+                    {
+                        for (column = 0; column < resultAutomat[line].Count; column++)
+                        {
+                            workString = string.Join(",", resultAutomat[line][column]);
+                            what = newStates.TryGetValue(workString, out newTransition);
+                            if (what)
+                            {
+                                Console.Write(newTransition + " ");
+                            }
+                            else
+                            {
+                                Console.Write("- ");
+                            }                            
+                        }
+                        Console.WriteLine();
+                    }
+                }
+            } 
         }
     }
 }
