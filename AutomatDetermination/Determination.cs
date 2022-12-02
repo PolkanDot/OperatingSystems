@@ -36,7 +36,7 @@ namespace ConsoleApplication
             List<List<string>> resultAutomatLine = new List<List<string>>();
 
             //Словарь, содержащий обозначения вновьобразовавшихся состояний
-            var newStates = new Dictionary<string, string>();
+            var newStates = new Dictionary<string, List<string>>();
 
             // Вспомогательный список для хранения eclose каждого начального состояния
             List<List<string>> ecloses = new List<List<string>>();
@@ -65,6 +65,7 @@ namespace ConsoleApplication
                 ecloses.Add(workList);
             }
 
+            // Вспомогательные переменные и списки для детерминизации
             List<string> startList = new List<string>();
             startList.Add("0");
             remainingStates.Add(startList);
@@ -72,20 +73,27 @@ namespace ConsoleApplication
             string currentEcloseString;
             string[] allSymbols;
             HashSet<string> uniqueSymbolsSet = new HashSet<string>();
+            int stringCounter = 0, stateCounter = 0;
+            newStates.Add(stateCounter.ToString(), remainingStates[0]);
+            stateCounter++;
 
-            while (remainingStates.Count > 0)
+            // Пока в ячейках переходов результирующей таблицы есть состояния, для которых мы не нашли их переходы мы продолжаем формировать таблицу
+            while (remainingStates.Count > stringCounter)
             {
-                currentEcloseList = remainingStates[0];
+                // Берем первое в списке состояиние и будем заполнять его переходы
+                currentEcloseList = remainingStates[stringCounter];
                 currentEcloseString = "";
+                // Из списка eclos-ов формируем связку пустых переходов для текущего состояния
                 for (column = 0; column < currentEcloseList.Count; column++)
                 {
                     currentEcloseString += "," + (string.Join(",", ecloses[Convert.ToInt32(currentEcloseList[column])]));
                 }
+                // Убираем дублирование состояний
                 allSymbols = currentEcloseString.Split(",");
                 uniqueSymbolsSet = new HashSet<string>(allSymbols);
                 currentEcloseList = uniqueSymbolsSet.ToList();
                 currentEcloseList.RemoveAt(0);
-                remainingStates.RemoveAt(0);
+                // Для каждого входного символа формируем состояние перехода
                 for (currentState = 0; currentState < m; currentState++)
                 {
                     newState = new List<string>();
@@ -101,14 +109,33 @@ namespace ConsoleApplication
                             }
                         }
                     }
+                    // Записываем полученное состояние в соответствующую ячейку результирующей таблицы
                     resultAutomatLine.Add(newState);
-                    if (!remainingStates.Contains(newState))
+
+                    if (newState.Count == 0)
                     {
-                        remainingStates.Add(newState);
+                        newState.Add("-");
+                        
                     }
+                    else
+                    {
+                        // Если полученное состояние еще не встречалось, то добавляем его в очередь для последующего заполнения таблицы 
+                        //if (!remainingStates.Contains(newState))
+                        if (!remainingStates.Any(o => o.SequenceEqual(newState)))
+                        {
+                            remainingStates.Add(newState);
+                            // Добавляем в словарь новое состояние всесте с его новым обозначением для последующего вывода
+                            newStates.Add(stateCounter.ToString(), newState);
+                            stateCounter++;
+                        }
+                    }                                  
                 }
+                // Добавляем в итоговою таблицу все переходы для обработанного состояния
                 resultAutomat.Add(resultAutomatLine);
+                resultAutomatLine.Clear();
+                stringCounter++;
             }
+            System.Threading.Thread.Sleep(5000);
         }
     }
 }
