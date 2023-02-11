@@ -21,7 +21,8 @@ namespace ConsoleApplication
                     }
                 }
             }
-        }
+        }        
+
         static void Main(string[] args)
         {
             // Подкотовка к чтению таблицы

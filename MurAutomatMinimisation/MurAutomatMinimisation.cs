@@ -76,7 +76,7 @@
                 {
                     unicSequence.Add(startOutputSymbolsSequence[line]);
                 }
-                //Присваеваем текущей строке номер группы по последователбности выходных символов
+                //Присваеваем текущей строке номер группы по последовательности выходных символов
                 // и записываем последней ячейкой строки таблицы
                 murStates[line, m] = (unicSequence.IndexOf(startOutputSymbolsSequence[line]) + 1).ToString();
                 currentSequence = "";
